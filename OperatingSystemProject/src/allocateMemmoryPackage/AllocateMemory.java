@@ -54,7 +54,7 @@ public class AllocateMemory
 	 * @param newFileSize
 	 * @return
 	 */
-	public memoryAllocateState ResizeFile(String fileName, int newFileSize)
+	public memoryAllocateState ResizeFile(String _FileName, int newFileSize)
 	{
 		memoryAllocateState result = memoryAllocateState.Error;
 		return result;

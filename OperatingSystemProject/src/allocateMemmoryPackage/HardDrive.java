@@ -19,4 +19,21 @@ public final class HardDrive 	// reprezentacja przestrzeni dyskowej
 		}
 		vector = new boolean[memorySize];
 	}
+	
+	public boolean CheckIfFileExists(String _fileName)
+	{
+		boolean result;
+		result = false;
+		
+		for (CatalogPosition position : catalog)
+		{
+			if (position.GetFileName() == _fileName)
+			{
+				result = true;
+				break;
+			}
+		}
+		
+		return result;
+	}
 }
