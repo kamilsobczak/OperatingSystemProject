@@ -22,6 +22,10 @@ public class HardDrive 	// reprezentacja przestrzeni dyskowej
 		{									
 			drive[i]= ' ';
 		}
+		for (int i = 0; i < iNodeTable.length; i++)
+		{									
+			iNodeTable[i] = null;
+		}
 		vector = new boolean[_memorySize];
 		driveMaxBlockCount = _memorySize / blockSize;
 	}
@@ -92,5 +96,10 @@ public class HardDrive 	// reprezentacja przestrzeni dyskowej
 	public AllocateMemory.memoryAllocateState CreateNewFile(String _fileName, char[] _fileContent)
 	{
 		return AllocateMemory.AllocateMemoryForFile(_fileName, _fileContent);
+	}
+	
+	public AllocateMemory.memoryAllocateState DeleteFileFromMemory(String _fileName)
+	{
+		return AllocateMemory.DeleteFileFromMemory(_fileName);
 	}
 }

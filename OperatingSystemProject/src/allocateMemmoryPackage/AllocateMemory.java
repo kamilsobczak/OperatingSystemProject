@@ -1,5 +1,7 @@
 package allocateMemmoryPackage;
 
+import java.util.ArrayList;
+import java.util.List;
 
 public class AllocateMemory 
 {
@@ -9,6 +11,7 @@ public class AllocateMemory
 		successfulyAllocatedMemory, //  pomyœlnie przydzielono pamiêæ do pliku
 		fileAlreadyExist,			//	plik ju¿ istnieje(nie mo¿na utworzyæ!)
 		notEnoughFreeMemory,		//	brak wystarczaj¹cej iloœci wolnej pamiêci
+		fileExceedsMaximumSize,		//  udanie zmieniono wielkoœæ pliku
 		notEmptyINode,				//	brak wolnego iwêz³a
 		noFileExist,				//	plik nie istnieje
 		successfulyDeletedFile,		//	udanie usuniêto plik
@@ -31,6 +34,10 @@ public class AllocateMemory
 		{
 			indexBlockIsNeaded = true;
 		}
+		else if (fileSize > 2 + (HardDrive.blockSize * HardDrive.blockSize))
+		{
+			return memoryAllocateState.fileExceedsMaximumSize;
+		}
 		boolean isEnoughtSpace = false;
 		int howManyBlocksIsNeaded = 0;
 		if (indexBlockIsNeaded)
@@ -48,23 +55,83 @@ public class AllocateMemory
 			int tempINodeNumber = GetFirstEmptyINode();
 			if (tempINodeNumber == -1)
 			{
-				result = memoryAllocateState.notEmptyINode;
+				return memoryAllocateState.notEmptyINode;
 			}			
-			int numberOfIndexBlock = GetFirstFreeBlock();
-			if (numberOfIndexBlock == -1)
+			int numberOfIndexBlock = GetFirstFreeBlockNumber();
+			HardDrive.vector[numberOfIndexBlock] = true;
+			List<Integer> listOfDataBlocks = new ArrayList<Integer>();
+			for (int i = 0; i < howManyBlocksIsNeaded; i++)
 			{
-				return memoryAllocateState.Error;
+				int tempBlockIndex = GetFirstFreeBlockNumber();
+				HardDrive.vector[tempBlockIndex] = true;
+				listOfDataBlocks.add(tempBlockIndex);
+				for(int j = 0; j < HardDrive.blockSize; j ++)
+				{
+					HardDrive.drive[(tempBlockIndex * HardDrive.blockSize) + j] = fileContent[2 + (i * HardDrive.blockSize)];
+				}
+			}
+			for(int i = 0; i < listOfDataBlocks.size(); i ++)
+			{
+				HardDrive.drive[HardDrive.blockSize * numberOfIndexBlock + i] = (char)listOfDataBlocks.get(i);
 			}
 			
-			
-			INode tempINode = new INode(fileContent[0], fileContent[1], fileSize, howManyBlocksIsNeaded, numberOfIndexBlock);
+			INode tempINode = new INode(tempINodeNumber, fileContent[0], fileContent[1], fileSize, howManyBlocksIsNeaded, numberOfIndexBlock);
+			HardDrive.iNodeTable[tempINodeNumber] = tempINode;
 			HardDrive.catalog.add(new CatalogPosition(fileName, tempINodeNumber));
+			result = memoryAllocateState.successfulyAllocatedMemory;
 		}
 		else
 		{
 			result = memoryAllocateState.notEnoughFreeMemory;
 		}
 		
+		return result;
+	}
+	
+	/**
+	 * funkcja usuwaj¹ca plik z pamiêci
+	 * @param fileName nazwa
+	 * @return
+	 */
+	public static memoryAllocateState DeleteFileFromMemory(String _fileName)
+	{
+		memoryAllocateState result = memoryAllocateState.Error;
+		
+		CatalogPosition position = GetCatalogPositionObject(_fileName);
+		
+		if (position == null)
+		{
+			return memoryAllocateState.Error;
+		}
+		else			
+		{
+			INode iNodeOfFileToDelete = HardDrive.iNodeTable[position.GetIndexOfINode()];
+			if (iNodeOfFileToDelete.GetBlockCounter() > 0)
+			{
+				
+				
+				
+				HardDrive.vector[iNodeOfFileToDelete.GetFileIndexBlock()] = false;
+			}
+			
+			HardDrive.iNodeTable[position.GetIndexOfINode()] = null;
+			HardDrive.catalog.remove(position);
+		}
+		
+		return result;
+	}
+	
+	private static CatalogPosition GetCatalogPositionObject(String _fileName)
+	{
+		CatalogPosition result = null;
+		
+		for (CatalogPosition position : HardDrive.catalog)
+		{
+			if (position.GetFileName() ==_fileName)
+			{
+				result = position;
+			}
+		}
 		
 		return result;
 	}
@@ -81,16 +148,6 @@ public class AllocateMemory
 		return result;
 	}
 	
-	/**
-	 * funkcja usuwaj¹ca plik z pamiêci
-	 * @param fileName nazwa
-	 * @return
-	 */
-	public static memoryAllocateState DeleteFileFromMemory(String fileName)
-	{
-		memoryAllocateState result = memoryAllocateState.Error;
-		return result;
-	}
 	/**
 	 * funkcja zmieniaj¹ca wielkoœæ pliku
 	 * @param fileName
@@ -153,7 +210,7 @@ public class AllocateMemory
 		return result;
 	}
 	
-	private static int GetFirstFreeBlock()
+	private static int GetFirstFreeBlockNumber()
 	{
 		int result = -1;
 		for(int i = 0; i < HardDrive.vector.length; i++)

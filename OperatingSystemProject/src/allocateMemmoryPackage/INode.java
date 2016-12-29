@@ -2,6 +2,7 @@ package allocateMemmoryPackage;
 
 public class INode 
 {
+	int indexInINodeTable;
 	int fileSize;
 	int blockCounter;
 	//bloki bezpoœrednie
@@ -10,13 +11,19 @@ public class INode
 	//blok poœredni 1 poziomu
 	int numberOfFirstLevelIndirectBlock;
 	
-	public INode(char _value1, char _value2, int _fileSize, int _blockCounter, int _numberOfFirstLevelIndirectBlock)
+	public INode(int _indexInINodeTable, char _value1, char _value2, int _fileSize, int _blockCounter, int _numberOfFirstLevelIndirectBlock)
 	{
+		indexInINodeTable = _indexInINodeTable;
 		fileSize = _fileSize;
 		blockCounter = _blockCounter;
 		value1 = _value1;
 		value2 = _value2;
 		numberOfFirstLevelIndirectBlock = _numberOfFirstLevelIndirectBlock;
+	}
+	
+	public int GetIndexInINodeTable()
+	{
+		return indexInINodeTable;
 	}
 	
 	public int GetBlockCounter()
