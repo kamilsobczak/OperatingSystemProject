@@ -3,11 +3,13 @@ package allocateMemmoryPackage;
 public class CatalogPosition // pozycja katalogu
 {
 	private String fileName;
-	private int firstIndexBlockNumber;
-	public CatalogPosition (String _fileName, int _firstIndexBlockNumber)
+	private int indexOfINode;
+	//private int blockCount;
+	public CatalogPosition (String _fileName, int _indexOfINode)
 	{
 		fileName = _fileName;
-		firstIndexBlockNumber = _firstIndexBlockNumber;
+		indexOfINode = _indexOfINode;
+		//blockCount = _blockCount;
 	}
 	
 	public String GetFileName()
@@ -15,8 +17,13 @@ public class CatalogPosition // pozycja katalogu
 		return fileName;
 	}
 	
-	public int GetFirstIndexBlockNumber()
+	public int GetIndexOfINode()
 	{
-		return firstIndexBlockNumber;
+		return indexOfINode;
 	}
+	
+	//public int GetBlockCount()
+	//{
+	//	return blockCount;
+	//}
 }

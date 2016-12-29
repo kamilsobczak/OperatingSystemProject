@@ -7,16 +7,13 @@ public class MainTest {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		int tempMemorySize = 0;
-		int tempBlockSize = 0;
+		int memorySizeSetByUser = 0;
 		Scanner reader = new Scanner(System.in); 
 		System.out.println("Projekt zaliczeniowy systemy operacyjne");
-		System.out.println("Podaj wielkoœæ dysku : ");
-		tempMemorySize =  reader.nextInt();
-		System.out.println("Podaj wielkoœæ pojedynczego bloku : ");
-		tempBlockSize = reader.nextInt();
+		System.out.println("Podaj wielkoœæ dysku (w znakach): \n");
+		memorySizeSetByUser =  reader.nextInt();
 		
-		HardDrive drive = new HardDrive(tempMemorySize, tempBlockSize);
+		HardDrive drive = new HardDrive(memorySizeSetByUser);
 		int applicationState = 1;
 		do
 		{
@@ -27,19 +24,33 @@ public class MainTest {
 					+ "4: Dopisz do pliku\n"
 					+ "5: Usun plik\n"
 					+ "6: Wyswietl plik\n"
-					+ "0: koniec");
+					+ "0: koniec\n");
 			switch(reader.nextInt())
 			{
 				case 1:
 				{
+					int tempFreeBlocks = drive.GetFreeSpaceOnDriveInBlocks();
+					int tempBlockSize = drive.GetBlockSize();
+					System.out.println("Na dysku pozostalo :" 
+					+ tempFreeBlocks * tempBlockSize
+					+ "wolnego miejsca na ktere sk³ada sie :"
+					+ tempFreeBlocks
+					+ "blokow.");
 					break;
 				}
 				case 2:
 				{
+					System.out.println("Lista plikow : \n");
+					System.out.println(drive.GetFilesListInString());
 					break;
 				}
 				case 3:
 				{
+					System.out.println("Podan nazwe pliku : \n");
+					String tempFileName = reader.nextLine();
+					System.out.println("Podan tresc pliku : \n");
+					String tempFileContent = reader.nextLine();
+					
 					break;
 				}
 				case 4:
